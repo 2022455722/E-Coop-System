@@ -30,12 +30,17 @@ public class GettingStartedApplication {
 
     @GetMapping("/convert")
     String convert(Map<String, Object> model) {
-    RelativisticModel.select();
-    var energy = Amount.valueOf("12 GeV");
+        RelativisticModel.select();
 
-    model.put("result", "E=mc^2: " + energy + " = " + energy.to(SI.KILOGRAM));
-    return "convert";
-}
+        final var result = java.util.Optional
+                .ofNullable(System.getenv().get("ENERGY"))
+                .map(Amount::valueOf)
+                .map(energy -> "E=mc^2: " + energy + " = " + energy.to(SI.KILOGRAM))
+                .orElse("ENERGY environment variable is not set!");
+
+        model.put("result", result);
+        return "convert";
+    }
 
     @GetMapping("/database")
     String database(Map<String, Object> model) {
